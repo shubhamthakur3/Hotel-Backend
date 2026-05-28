@@ -40,6 +40,7 @@ THIRD_PARTY_APPS = [
     "django_filters",
     "django_celery_beat",
     "django_celery_results",
+    "drf_spectacular",
 ]
 
 LOCAL_APPS = [
@@ -143,6 +144,7 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 # ─── Django REST Framework ──────────────────────────────────────────────────────
 
 REST_FRAMEWORK = {
+    "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
     "DEFAULT_AUTHENTICATION_CLASSES": (
         "rest_framework_simplejwt.authentication.JWTAuthentication",
     ),
@@ -171,6 +173,13 @@ REST_FRAMEWORK = {
     ),
     "DATETIME_FORMAT": "%Y-%m-%dT%H:%M:%SZ",
     "DATE_FORMAT": "%Y-%m-%d",
+}
+
+SPECTACULAR_SETTINGS = {
+    "TITLE": "Hotel Backend API",
+    "DESCRIPTION": "API documentation for the Hotel Backend.",
+    "VERSION": "1.0.0",
+    "SERVE_INCLUDE_SCHEMA": False,
 }
 
 # ─── SimpleJWT ──────────────────────────────────────────────────────────────────
