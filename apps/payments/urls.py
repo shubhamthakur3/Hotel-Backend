@@ -7,5 +7,5 @@ from .views import StripeWebhookView
 app_name = "payments"
 
 urlpatterns = [
-    path("payment", StripeWebhookView.as_view(), name="stripe-webhook"),
+    path("payment/", StripeWebhookView.as_view(), name="stripe-webhook"),
 ]

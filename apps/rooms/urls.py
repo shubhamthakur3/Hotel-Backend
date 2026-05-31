@@ -7,6 +7,6 @@ from .views import RoomDetailView, RoomListCreateView
 app_name = "rooms"
 
 urlpatterns = [
-    path("<int:hotel_id>/rooms", RoomListCreateView.as_view(), name="room-list-create"),
-    path("<int:hotel_id>/rooms/<int:room_id>", RoomDetailView.as_view(), name="room-detail"),
+    path("<int:hotel_id>/rooms/", RoomListCreateView.as_view(), name="room-list-create"),
+    path("<int:hotel_id>/rooms/<int:room_id>/", RoomDetailView.as_view(), name="room-detail"),
 ]

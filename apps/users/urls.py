@@ -7,8 +7,8 @@ from .views import GuestDetailView, GuestListCreateView, MyBookingsView, UserPro
 app_name = "users"
 
 urlpatterns = [
-    path("profile", UserProfileView.as_view(), name="profile"),
-    path("myBookings", MyBookingsView.as_view(), name="my-bookings"),
-    path("guests", GuestListCreateView.as_view(), name="guest-list-create"),
-    path("guests/<int:guest_id>", GuestDetailView.as_view(), name="guest-detail"),
+    path("profile/", UserProfileView.as_view(), name="profile"),
+    path("myBookings/", MyBookingsView.as_view(), name="my-bookings"),
+    path("guests/", GuestListCreateView.as_view(), name="guest-list-create"),
+    path("guests/<int:guest_id>/", GuestDetailView.as_view(), name="guest-detail"),
 ]

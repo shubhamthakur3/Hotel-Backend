@@ -146,17 +146,12 @@ class TokenRefreshView(APIView):
                 status=status.HTTP_401_UNAUTHORIZED,
             )
 
+        from apps.accounts.models import User
+
         try:
             refresh = RefreshToken(refresh_token)
-            access_token = str(refresh.access_token)
 
-            # Rotate: blacklist old, issue new refresh
-            new_refresh = RefreshToken.for_user(
-                refresh.access_token.payload.get("user_id")
-            )
-
-            # Actually, we need to get the user object for proper rotation
-            from apps.accounts.models import User
+            # Get the user object for proper rotation
             user_id = refresh.payload.get("user_id")
             user = User.objects.get(id=user_id)
             

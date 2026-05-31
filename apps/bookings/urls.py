@@ -13,9 +13,9 @@ from .views import (
 app_name = "bookings"
 
 urlpatterns = [
-    path("init", BookingInitView.as_view(), name="booking-init"),
-    path("<int:booking_id>/addGuests", BookingAddGuestsView.as_view(), name="booking-add-guests"),
-    path("<int:booking_id>/payments", BookingPaymentView.as_view(), name="booking-payment"),
-    path("<int:booking_id>/cancel", BookingCancelView.as_view(), name="booking-cancel"),
-    path("<int:booking_id>/status", BookingStatusView.as_view(), name="booking-status"),
+    path("init/", BookingInitView.as_view(), name="booking-init"),
+    path("<int:booking_id>/addGuests/", BookingAddGuestsView.as_view(), name="booking-add-guests"),
+    path("<int:booking_id>/payments/", BookingPaymentView.as_view(), name="booking-payment"),
+    path("<int:booking_id>/cancel/", BookingCancelView.as_view(), name="booking-cancel"),
+    path("<int:booking_id>/status/", BookingStatusView.as_view(), name="booking-status"),
 ]
