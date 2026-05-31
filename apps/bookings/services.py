@@ -232,9 +232,13 @@ class BookingService:
 
         # Trigger confirmation email (async via Celery)
         from apps.notifications.tasks import send_booking_confirmation_email
-        transaction.on_commit(
-            lambda: send_booking_confirmation_email.delay(booking.id)
-        )
+        def safe_send_email():
+            try:
+                send_booking_confirmation_email.delay(booking.id)
+            except Exception as e:
+                logger.warning("Failed to queue booking confirmation email: %s", str(e))
+
+        transaction.on_commit(safe_send_email)
 
         return booking
 
@@ -309,9 +313,13 @@ class BookingService:
 
         # Trigger confirmation email (async via Celery)
         from apps.notifications.tasks import send_booking_confirmation_email
-        transaction.on_commit(
-            lambda: send_booking_confirmation_email.delay(booking.id)
-        )
+        def safe_send_email():
+            try:
+                send_booking_confirmation_email.delay(booking.id)
+            except Exception as e:
+                logger.warning("Failed to queue booking confirmation email: %s", str(e))
+
+        transaction.on_commit(safe_send_email)
 
         return booking
 

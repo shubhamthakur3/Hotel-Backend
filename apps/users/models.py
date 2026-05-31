@@ -38,6 +38,13 @@ class Guest(models.Model):
         on_delete=models.CASCADE,
         related_name="guests",
     )
+    hotel = models.ForeignKey(
+        "hotels.Hotel",
+        on_delete=models.CASCADE,
+        related_name="guests",
+        null=True,
+        blank=True,
+    )
     name = models.CharField(max_length=255)
     gender = models.CharField(
         max_length=10,

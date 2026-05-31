@@ -84,13 +84,15 @@ class BookingPaymentView(APIView):
     """
     POST /api/bookings/{bookingId}/payments
 
-    Initiate payment via Stripe Checkout (Step 3).
+    Initiate payment (Step 3). For testing purposes, confirms directly.
     """
 
     permission_classes = [IsAuthenticated]
 
     def post(self, request, booking_id):
-        from apps.payments.services import CheckoutService
+        import uuid
+        from django.db import transaction
+        from apps.payments.models import Payment, PaymentStatus
 
         booking = BookingService.get_booking_or_404(booking_id)
 
@@ -100,13 +102,27 @@ class BookingPaymentView(APIView):
                 status=status.HTTP_403_FORBIDDEN,
             )
 
-        checkout_data = CheckoutService.create_checkout_session(booking)
+        from apps.bookings.models import BookingStatus
+        if booking.status == BookingStatus.CONFIRMED:
+            return Response(
+                {
+                    "message": "Booking is already confirmed.",
+                    "booking": BookingSerializer(booking).data,
+                }
+            )
+
+        with transaction.atomic():
+            payment = Payment.objects.create(
+                transaction_id=f"MOCK-STRIPE-{uuid.uuid4().hex[:12].upper()}",
+                price=booking.total_price,
+                status=PaymentStatus.CONFIRMED,
+            )
+            # Confirm booking
+            booking = BookingService.confirm_booking(booking.id, payment)
 
         return Response(
             {
-                "message": "Stripe checkout session created.",
-                "session_url": checkout_data["session_url"],
-                "session_id": checkout_data["session_id"],
+                "message": "Payment confirmed directly (testing mode).",
                 "booking": BookingSerializer(booking).data,
             }
         )

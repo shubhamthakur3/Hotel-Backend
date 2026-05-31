@@ -30,10 +30,15 @@ class SignupSerializer(serializers.ModelSerializer):
         write_only=True,
         style={"input_type": "password"},
     )
+    roles = serializers.ListField(
+        child=serializers.CharField(),
+        required=False,
+        write_only=True,
+    )
 
     class Meta:
         model = User
-        fields = ["id", "name", "email", "password", "confirm_password"]
+        fields = ["id", "name", "email", "password", "confirm_password", "roles"]
         read_only_fields = ["id"]
 
     def validate_email(self, value):
@@ -51,12 +56,19 @@ class SignupSerializer(serializers.ModelSerializer):
         return attrs
 
     def create(self, validated_data):
-        """Create user with hashed password and GUEST role."""
+        """Create user with hashed password and specified roles."""
+        input_roles = validated_data.get("roles", [UserRole.GUEST])
+        # Only allow GUEST and HOTEL_MANAGER via public signup
+        allowed_roles = [UserRole.GUEST, UserRole.HOTEL_MANAGER]
+        roles = [r for r in input_roles if r in allowed_roles]
+        if not roles:
+            roles = [UserRole.GUEST]
+
         return User.objects.create_user(
             email=validated_data["email"],
             password=validated_data["password"],
             name=validated_data["name"],
-            roles=[UserRole.GUEST],
+            roles=roles,
         )
 
 

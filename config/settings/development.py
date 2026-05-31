@@ -42,3 +42,8 @@ REST_FRAMEWORK["DEFAULT_THROTTLE_RATES"] = {}  # noqa: F405
 # ─── Logging (more verbose in dev) ─────────────────────────────────────────────
 
 LOGGING["loggers"]["apps"]["level"] = "DEBUG"  # noqa: F405
+
+# ─── Celery (execute synchronously in development to bypass Redis/Docker) ──────
+
+CELERY_TASK_ALWAYS_EAGER = True
+CELERY_TASK_EAGER_PROPAGATES = True

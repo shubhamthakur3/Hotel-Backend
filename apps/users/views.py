@@ -63,7 +63,7 @@ class MyBookingsView(APIView):
 class GuestListCreateView(APIView):
     """
     GET  /api/users/guests  — List my guests
-    POST /api/users/guests  — Add a guest
+    POST /api/users/guests  — Add a guest (Hotel Manager / Admin only, for their own hotel)
     """
 
     permission_classes = [IsAuthenticated]
@@ -74,11 +74,37 @@ class GuestListCreateView(APIView):
         return Response(serializer.data)
 
     def post(self, request):
+        from apps.accounts.models import UserRole
+        from apps.hotels.models import Hotel
+
+        if not (request.user.has_role(UserRole.HOTEL_MANAGER) or request.user.has_role(UserRole.ADMIN)):
+            return Response(
+                {"error": {"code": "forbidden", "message": "Only hotel managers can create guest profiles."}},
+                status=status.HTTP_403_FORBIDDEN,
+            )
+
         serializer = GuestCreateSerializer(
             data=request.data,
             context={"request": request},
         )
         serializer.is_valid(raise_exception=True)
+
+        hotel_id = serializer.validated_data.get("hotel_id")
+        try:
+            hotel = Hotel.objects.get(id=hotel_id)
+        except Hotel.DoesNotExist:
+            return Response(
+                {"error": {"code": "not_found", "message": f"Hotel with id {hotel_id} not found."}},
+                status=status.HTTP_404_NOT_FOUND,
+            )
+
+        # Enforce that HOTEL_MANAGER can only create guests for their own property
+        if not request.user.has_role(UserRole.ADMIN) and hotel.owner != request.user:
+            return Response(
+                {"error": {"code": "forbidden", "message": "You can only create guest profiles for your own hotels."}},
+                status=status.HTTP_403_FORBIDDEN,
+            )
+
         guest = serializer.save()
         return Response(
             GuestSerializer(guest).data,
