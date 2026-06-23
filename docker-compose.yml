@@ -108,7 +108,25 @@ services:
     depends_on:
       - web
 
+  # ─── Next.js Frontend ────────────────────────────────────────────────
+  frontend:
+    build:
+      context: ../hotel frontend
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    environment:
+      - NEXT_PUBLIC_API_URL=http://localhost:8000/api
+      - NEXT_PUBLIC_PAYMENT_MODE=mock
+    volumes:
+      - ../hotel frontend:/app
+      - /app/node_modules
+      - /app/.next
+    depends_on:
+      - web
+
 volumes:
   postgres_data:
   static_volume:
   media_volume:
+
